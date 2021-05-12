@@ -26,3 +26,49 @@ plt.show()
 df['rating'].value_counts().head(15).plot(kind='bar')
 plt.xlabel('ratings')
 plt.show()
+
+# Lets check the effectiveness of the drugs
+df['effectiveness'].value_counts().plot(kind='pie')
+plt.show()
+
+df['condition'].value_counts()
+
+#lets check the various conditions the medicine cures (top 10) since they are over thousand
+df['condition'].value_counts().head(10).plot(kind='bar')
+plt.xlabel('condition')
+plt.show()
+
+# Lets check our target variable 'sideEffects'
+df['sideEffects'].value_counts().plot(kind='pie')
+plt.ylabel('')
+plt.show()
+
+#put target into a separate columns
+target=df.pop('sideEffects')
+df.head()
+
+# Lets convert categorical data to numeric
+cols=['urlDrugName','effectiveness','condition']
+for x in cols:
+  df[x]=pd.factorize(df[x])[0]
+
+target=pd.factorize(target)[0]
+df.head()  
+
+# scaling the data before modelling
+scaler=StandardScaler()
+df=scaler.fit_transform(df)
+df
+
+# splitting data into train and validation
+x_train,x_test,y_train,y_test=train_test_split(df,target)
+
+# using SVM
+svm_clf=SVC().fit(x_train,y_train)
+svm_pred=svm_clf.predict(x_test)
+print(classification_report(y_test,svm_pred))
+
+# using random forest
+rf_clf=RandomForestClassifier().fit(x_train,y_train)
+rf_pred=rf_clf.predict(x_test)
+print(classification_report(y_test,rf_pred))
